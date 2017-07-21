@@ -6,7 +6,7 @@
 *.pyc
 
 # Test Script #
-/src/run.py
+/matrix_network/run.py
 
 # Other #
 /examples/*
