@@ -8,3 +8,6 @@
 
 # Test Script #
 /src/run.py
+
+# Other #
+/src/*
