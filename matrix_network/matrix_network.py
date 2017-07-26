@@ -129,9 +129,9 @@ class Network:
         for t in range(epochs):
             out_str = "[{0:4d}]".format(t)
 
-            for training_inputs, training_labels in training_data:
-                output = self.forward_propagate(training_inputs)
-                self.backpropagate(output, training_labels)
+            for inputs, labels in training_data:
+                output = self.forward_propagate(inputs)
+                self.backpropagate(output, labels)
                 self.update_weights(eta=eta)
 
             if eval_training:
@@ -155,3 +155,5 @@ class Network:
 
                 out_str = "{0} Test error: {1:.5f}".format(
                     out_str, float(errors) / n_test)
+
+            print out_str
