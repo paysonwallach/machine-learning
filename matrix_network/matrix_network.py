@@ -122,8 +122,8 @@ class Network:
 
     def evaluate(self, training_data, test_data, epochs, eta,
                  eval_training=False, eval_test=True):
-        n_training = len(training_data)
-        n_test = len(test_data)
+        n_training = len(training_data[0])
+        n_test = len(test_data[0])
 
         print "Training for {0} epochs...".format(epochs)
         for t in range(epochs):
