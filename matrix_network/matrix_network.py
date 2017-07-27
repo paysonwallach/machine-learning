@@ -99,15 +99,14 @@ class Network:
 
     def backpropagate(self, y_hat, classification):
         # Calculate derivative of cost function
-        print y_hat, classification
         self.layers[-1].del_w = (y_hat - classification).T
         for i in range(self.num_layers-2, 0, -1):
 
-            self.layers[i].del_b = self.layers[i].del_w * \
-                self.layers[i].f_prime
-
             self.layers[i].del_w = np.dot(self.layers[i].del_w,
                                           self.layers[i].weights)
+
+            self.layers[i].del_b = self.layers[i].del_w * \
+                self.layers[i].f_prime
 
     def update_weights(self, eta):
         for i in range(self.num_layers-1):
@@ -122,17 +121,19 @@ class Network:
 
     def evaluate(self, training_data, test_data, epochs, eta,
                  eval_training=False, eval_test=True):
-        n_training = len(training_data[0])
-        n_test = len(test_data[0])
+        n_training = len(training_data[1])
+        n_test = len(test_data[1])
 
         print "Training for {0} epochs...".format(epochs)
         for t in range(epochs):
             out_str = "[{0:4d}]".format(t)
 
-            for inputs, labels in training_data:
-                output = self.forward_propagate(inputs)
-                self.backpropagate(output, labels)
-                self.update_weights(eta=eta)
+            inputs = training_data[0]
+            labels = training_data[1]
+
+            output = self.forward_propagate(inputs)
+            self.backpropagate(output, labels)
+            self.update_weights(eta=eta)
 
             if eval_training:
                 errors = 0
