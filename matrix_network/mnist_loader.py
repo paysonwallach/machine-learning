@@ -8,14 +8,6 @@ def load_data():
     training_data, validation_data, test_data = cPickle.load(data)
     data.close()
 
-    training_labels = training_data[1]
-
-    vectorized_training_labels = np.empty_like(
-        training_data[1], dtype=object)
-
-    for i in range(len(training_labels)):
-        vectorized_training_labels[i] = vectorize_label(training_labels[i])
-
     return training_data, validation_data, test_data
 
 
@@ -26,9 +18,6 @@ def create_minibatch(data, minibatch_size):
 
     minibatch_inputs = np.empty((n, minibatch_size))
     minibatch_labels = np.empty((minibatch_size, 1))
-
-    print np.shape(minibatch_inputs)
-    print np.shape(minibatch_labels)
 
     for i in range(minibatch_size):
         minibatch_inputs[:, i] = inputs[i]
@@ -44,9 +33,3 @@ def shuffle(data):
     np.random.shuffle(data[1])
 
     return data
-
-
-def vectorize_label(i):
-    label = np.zeros((10, 1))
-    label[i] = 1.0
-    return label
