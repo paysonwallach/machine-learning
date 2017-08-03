@@ -36,31 +36,31 @@ class Layer:
         self.del_w = None
         # Gradient of the bias vector of the layer (n x 1)
         self.del_b = None
-        # Activation function derivatives for the layer (n x 1)
+        # Activation function derivatives for the layer (n x m)
         self.f_prime = None
 
         if not input_layer:
-            self.s = np.zeros((minibatch_size, size[0]))
-            self.delta_w = np.zeros((minibatch_size, size[0]))
-
-        if not output_layer:
+            self.s = np.zeros((minibatch_size, size[1]))
+            self.delta = np.zeros((minibatch_size, size[1]))
             self.weights = np.random.randn(size[0], size[1])
-            self.biases = np.random.randn(1, size[1])
 
         if not input_layer and not output_layer:
-            self.f_prime = np.zeros((size[0], minibatch_size))
+            self.f_prime = np.zeros((minibatch_size, size[1]))
+            self.biases = np.random.randn(1, size[1])
 
     def forward_propagate(self):
         if self.input_layer:  # No activation function applied to input layer
-            self.z = np.dot(self.z, self.weights)
             return self.z
 
-        self.z = self.activation(self.s)
-
         if not self.input_layer and not self.output_layer:
-            self.z = np.dot(self.z, self.weights)
-            self.z += self.biases
-            self.f_prime = self.activation(self.s, deriv=True).T
+            self.s = np.dot(self.s, self.weights)
+            self.s += self.biases
+            self.f_prime = self.activation(self.s, deriv=True)
+
+        else:
+            self.s = np.dot(self.s, self.weights)
+
+        self.z = self.activation(self.s)
 
         return self.z
 
@@ -77,84 +77,101 @@ class Network:
             if i == 0:
                 print "Initilizing input layer of size {0}.".format(
                     sizes[i])
-                self.layers[i] = Layer([sizes[i], sizes[i+1]], minibatch_size,
+                self.layers[i] = Layer([sizes[i]], minibatch_size,
                                        input_layer=True)
             else:
                 print "Initilizing hidden layer of size {0}.".format(
                     sizes[i])
-                self.layers[i] = Layer([sizes[i], sizes[i+1]], minibatch_size,
+                self.layers[i] = Layer([sizes[i-1], sizes[i]], minibatch_size,
                                        activation=f_sigmoid)
 
         print "Initilizing output layer of size {0}.".format(sizes[-1])
-        self.layers[-1] = Layer([sizes[-1]], minibatch_size, output_layer=True,
-                                activation=f_softmax)
+        self.layers[-1] = Layer([sizes[-2], sizes[-1]], minibatch_size,
+                                output_layer=True, activation=f_softmax)
 
         print "Done!"
 
     def forward_propagate(self, input_data):
         for i in range(self.num_layers-1):
-            print "Layer {0}...".format(i)
+            print "Forward propagating through Layer {0}...".format(i)
             self.layers[i+1].s = self.layers[i].forward_propagate()
         return self.layers[-1].forward_propagate()
 
     def backpropagate(self, y_hat, classification):
         # Calculate derivative of cost function
-        self.layers[-1].del_w = (y_hat - classification).T
+        self.layers[-1].delta = (y_hat - classification)
+
         for i in range(self.num_layers-2, 0, -1):
+            print "Backpropagating through layer {0}...".format(i)
 
-            self.layers[i].del_w = np.dot(self.layers[i].del_w,
-                                          self.layers[i].weights)
-
-            self.layers[i].del_b = self.layers[i].del_w * \
+            self.layers[i].delta = np.dot(self.layers[i+1].delta,
+                                          self.layers[i+1].weights.T) * \
                 self.layers[i].f_prime
 
     def update_weights(self, eta):
-        for i in range(self.num_layers-1):
-            delta_del_b = -eta * (np.dot(self.layers[i+1].del_b,
-                                  self.layers[i].z)).T
+        for i in range(1, self.num_layers):
+            print "Updating layer {0}...".format(i)
+            """ del_b = -eta * np.dot(np.ones_like(self.layers[i].biases),
+                                  self.layers[i].delta) """
 
-            delta_del_w = -eta * (np.dot(self.layers[i+1].del_w,
-                                  self.layers[i].z)).T
+            del_w = -eta * np.dot(self.layers[i-1].z.T, self.layers[i].delta)
 
-            self.layers[i].biases += delta_del_b
-            self.layers[i].weights += delta_del_w
+            # self.layers[i].biases += del_b
+            self.layers[i].weights += del_w
 
     def evaluate(self, training_data, test_data, epochs, eta,
                  eval_training=False, eval_test=True):
-        n_training = len(training_data[1])
+        training_examples = training_data[0]
+        n_training = len(training_examples)
         n_test = len(test_data[1])
 
         print "Training for {0} epochs...".format(epochs)
         for t in range(epochs):
-            out_str = "[{0:4d}]".format(t)
+            out_str = "Epoch {0}:".format(t+1)
 
-            inputs = training_data[0]
-            labels = training_data[1]
-
-            output = self.forward_propagate(inputs)
-            self.backpropagate(output, labels)
-            self.update_weights(eta=eta)
+            for i in range(n_training/epochs):
+                inputs, labels = create_minibatch(training_data, i,
+                                                  minibatch_size=100)
+                output = self.forward_propagate(inputs)
+                self.backpropagate(output, labels)
+                self.update_weights(eta=eta)
 
             if eval_training:
                 errors = 0
-                for training_inputs, training_labels in training_data:
-                    output = self.forward_propagate(training_inputs)
-                    y_hat = np.argmax(output, axis=1)
-                    errors += np.sum(1 - training_labels[np.arrange(
-                                     len(training_labels)), y_hat])
+                training_inputs, training_labels = training_data
+                output = self.forward_propagate(training_inputs)
+                y_hat = np.argmax(output, axis=1)
+                errors += np.sum(1 - training_labels[np.arange(
+                                 len(training_labels)), y_hat])
 
                 out_str = "{0} Training error: {1:.5f}".format(
                     out_str, float(errors) / n_training)
 
             if eval_test:
                 errors = 0
-                for test_inputs, test_labels in test_data:
-                    output = self.forward_propagate(test_inputs)
-                    y_hat = np.argmax(output, axis=1)
-                    errors += np.sum(1 - test_labels[np.arrange(
-                                     len(test_labels)), y_hat])
+                test_inputs, test_labels = test_data
+                output = self.forward_propagate(test_inputs)
+                y_hat = np.argmax(output, axis=1)
+                errors += np.sum(1 - test_labels[np.arange(
+                                 len(test_labels)), y_hat])
 
                 out_str = "{0} Test error: {1:.5f}".format(
                     out_str, float(errors) / n_test)
 
             print out_str
+
+
+def create_minibatch(data, i, minibatch_size):
+    inputs = data[0]
+    labels = data[1]
+
+    n = np.size(inputs[0], axis=0)
+
+    minibatch_inputs = np.zeros((n, minibatch_size))
+    minibatch_labels = np.empty((minibatch_size, 10))
+
+    for j in range(minibatch_size):
+        minibatch_inputs[:, j] = inputs[:, i+j]
+        minibatch_labels[j, :] = labels[i+j, :]
+
+    return minibatch_inputs, minibatch_labels
