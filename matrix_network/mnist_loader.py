@@ -8,9 +8,11 @@ def load_data():
     training_data, validation_data, test_data = cPickle.load(data)
     data.close()
 
-    training_inputs, training_labels = shuffle(training_data)
+    """training_inputs, training_labels = shuffle(training_data)
     validation_data = shuffle(validation_data)
-    test_data = shuffle(test_data)
+    test_data = shuffle(test_data)"""
+
+    training_inputs, training_labels = training_data
 
     vectorized_labels = np.zeros((len(training_labels), 10))
 
@@ -18,17 +20,10 @@ def load_data():
         vectorized_labels[i] = vectorize_label(training_labels[i])
 
     training_data = zip(training_inputs, vectorized_labels)
+    validation_data = zip(*validation_data)
+    test_data = zip(*test_data)
 
     return training_data, validation_data, test_data
-
-
-def shuffle(data):
-    rng_state = np.random.get_state()
-    np.random.shuffle(data[0])
-    np.random.set_state(rng_state)
-    np.random.shuffle(data[1])
-
-    return data
 
 
 def vectorize_label(i):
