@@ -1,9 +1,6 @@
 import numpy as np
 
 
-np.set_printoptions(threshold=np.nan)
-
-
 def f_sigmoid(X, deriv=False):
     if not deriv:
         return 1 / (1 + np.exp(-X))
