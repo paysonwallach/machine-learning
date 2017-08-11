@@ -8,10 +8,6 @@ def load_data():
     training_data, validation_data, test_data = cPickle.load(data)
     data.close()
 
-    """training_inputs, training_labels = shuffle(training_data)
-    validation_data = shuffle(validation_data)
-    test_data = shuffle(test_data)"""
-
     training_inputs, training_labels = training_data
 
     vectorized_labels = np.zeros((len(training_labels), 10))
