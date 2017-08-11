@@ -5,8 +5,5 @@
 .DS_Store
 *.pyc
 
-# Test Script #
+# Test Scripts #
 /matrix_network/run.py
-
-# Other #
-/examples/*
