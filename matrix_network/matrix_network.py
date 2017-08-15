@@ -46,11 +46,12 @@ class Layer:
 
 
 class Network:
-    def __init__(self, sizes, minibatch_size):
+    def __init__(self, sizes, minibatch_size, cost=cost.cross_entropy):
         self.sizes = sizes
         self.num_layers = len(sizes)
         self.layers = np.empty(self.num_layers, dtype=object)
         self.minibatch_size = minibatch_size
+        self.cost = cost
 
         print "Initilizing network..."
         for i in range(self.num_layers-1):
@@ -78,7 +79,7 @@ class Network:
 
     def backpropagate(self, y_hat, label):
         # Calculate derivative of cost function
-        self.layers[-1].delta = cost.cross_entropy.error(y_hat, label)
+        self.layers[-1].delta = (self.cost).error(y_hat, label)
 
         for i in range(self.num_layers-2, 0, -1):
             self.layers[i].delta = np.dot(self.layers[i+1].delta,
@@ -109,6 +110,3 @@ class Network:
         output = self.forward_propagate(inputs)
         self.backpropagate(output, labels)
         self.update_weights(n_examples, eta=eta, lmbd=lmbd)
-
-    def total_cost(self, y_hat, labels):
-        return self.cost.cross_entropy.func(y_hat, labels)

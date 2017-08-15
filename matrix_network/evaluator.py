@@ -1,3 +1,5 @@
+# Evaluates neural networks with given hyper-parameters and returns results
+
 import numpy as np
 
 
@@ -20,6 +22,7 @@ def evaluate(network, epochs, eta, lmbd, training_data,
         if validation_data:
             n_validation = len(validation_data)
             n_correct = 0
+
             for i in range(n_validation/network.minibatch_size):
                 inputs, labels = create_minibatch(validation_data, i,
                                                   network.minibatch_size)
