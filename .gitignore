@@ -5,5 +5,8 @@
 .DS_Store
 *.pyc
 
+# Virtual Environment #
+/matrix_network/env/*
+
 # Test Scripts #
 /matrix_network/run.py
