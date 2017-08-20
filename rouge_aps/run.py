@@ -1,4 +1,4 @@
-import report_loader
+import training_loader
 
 
-report_loader.load_reports()
+training_loader.load_training_labels()
