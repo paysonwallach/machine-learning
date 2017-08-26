@@ -1,9 +1,10 @@
+# Third-party libraries
 import numpy as np
 import pandas as pd
 
 
 def load_reports():
-    PATH = "E:\\Rogue APs\\data\\"
+    PATH = "E:/Rogue APs/data/"
     labels = ['last_seen', 'mac_address', 'location', 'D', 'E', 'F',
               'ssid', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']
 
@@ -13,12 +14,12 @@ def load_reports():
     previous_week = pd.read_csv(PATH + "previous_week.csv", sep=',',
                                 header=7, names=labels, error_bad_lines=False)
 
-    # Drop extraneous columns
-    current_week.drop(current_week.columns[[0, 3, 4, 5, 7, 8, 9, 10, 11, 12,
-                      13, 14, 15, 16]], axis=1, inplace=True)
+    # Filter out extraneous columns
+    current_week = current_week.filter(items=['mac_address', 'location',
+                                              'ssid'], axis=1)
 
-    previous_week.drop(previous_week.columns[[0, 3, 4, 5, 6, 7, 8, 9, 10, 11,
-                       12, 13, 14, 15, 16]], axis=1, inplace=True)
+    previous_week = previous_week.filter(items=['mac_address', 'location',
+                                                'ssid'], axis=1)
 
     # Add index column to current week
     current_week['current_week_index'] = range(len(current_week))
