@@ -5,8 +5,10 @@
 .DS_Store
 *.pyc
 
-# Virtual Environment #
+# Virtual Environments #
 /matrix_network/env/*
+/rogue_aps/env/*
 
 # Test Scripts #
 /matrix_network/run.py
+/rogue_aps/run.py

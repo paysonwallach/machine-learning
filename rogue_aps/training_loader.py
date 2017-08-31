@@ -92,8 +92,8 @@ def vectorize_label(label):
 
     translate = {"ROUTER": 0, "PRINTER": 1,
                  "OTHER (Smart TV, Chromecast, Roku, etc.)": 2,
-                 "EXTERNAL (Local businesses)": 3, "UNKNOWN ": 4}
+                 "EXTERNAL (Local businesses)": 3, "UNKNOWN": 4}
 
-    vectorized_label[translate[label]] = 1
+    vectorized_label[translate[label.strip(' ')]] = 1
 
     return vectorized_label
