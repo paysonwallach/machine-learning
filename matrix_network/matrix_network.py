@@ -53,23 +53,23 @@ class Network:
         self.minibatch_size = minibatch_size
         self.cost = cost
 
-        print "Initilizing network..."
+        print("Initilizing network...")
         for i in range(self.num_layers-1):
             if i == 0:
-                print "\tInitilizing input layer of size {0}.".format(
-                    sizes[i])
+                print("\tInitilizing input layer of size {0}.".format(
+                    sizes[i]))
                 self.layers[i] = Layer([sizes[i]], minibatch_size,
                                        input_layer=True)
             else:
-                print "\tInitilizing hidden layer of size {0}.".format(
-                    sizes[i])
+                print("\tInitilizing hidden layer of size {0}.".format(
+                    sizes[i]))
                 self.layers[i] = Layer([sizes[i-1], sizes[i]], minibatch_size)
 
-        print "\tInitilizing output layer of size {0}.".format(sizes[-1])
+        print("\tInitilizing output layer of size {0}.".format(sizes[-1]))
         self.layers[-1] = Layer([sizes[-2], sizes[-1]], minibatch_size,
                                 output_layer=True, activation=sigma.softmax)
 
-        print "Done!"
+        print("Done!")
 
     def forward_propagate(self, input_data):
         self.layers[0].z = input_data
