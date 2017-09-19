@@ -1,2 +1,2 @@
-# machine-learning
-A collection of machine-learning-related projects and ideas.
+# matrix-network
+A simple ground-up matrix-based neural network in Python.
