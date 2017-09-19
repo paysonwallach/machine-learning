@@ -1,14 +1,9 @@
-# Data #
-/data/*
-
 # OS-generated files #
 .DS_Store
 *.pyc
 
 # Virtual Environments #
-/matrix_network/env/*
-/rogue_aps/env/*
+/env/*
 
 # Test Scripts #
-/matrix_network/run.py
-/rogue_aps/run.py
+/run.py
