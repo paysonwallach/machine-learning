@@ -54,7 +54,7 @@ class Network:
         self.cost = cost
 
         print("Initilizing network...")
-        for i in range(self.num_layers-1):
+        for i in range(self.num_layers - 1):
             if i == 0:
                 print("\tInitilizing input layer of size {0}.".format(
                     sizes[i]))
@@ -63,7 +63,8 @@ class Network:
             else:
                 print("\tInitilizing hidden layer of size {0}.".format(
                     sizes[i]))
-                self.layers[i] = Layer([sizes[i-1], sizes[i]], minibatch_size)
+                self.layers[i] = Layer([sizes[i - 1],
+                                        sizes[i]], minibatch_size)
 
         print("\tInitilizing output layer of size {0}.".format(sizes[-1]))
         self.layers[-1] = Layer([sizes[-2], sizes[-1]], minibatch_size,
@@ -73,22 +74,22 @@ class Network:
 
     def forward_propagate(self, input_data):
         self.layers[0].z = input_data
-        for i in range(self.num_layers-1):
-            self.layers[i+1].s = self.layers[i].forward_propagate()
+        for i in range(self.num_layers - 1):
+            self.layers[i + 1].s = self.layers[i].forward_propagate()
         return self.layers[-1].forward_propagate()
 
     def backpropagate(self, y_hat, label):
         # Calculate derivative of cost function
         self.layers[-1].delta = (self.cost).error(y_hat, label)
 
-        for i in range(self.num_layers-2, 0, -1):
-            self.layers[i].delta = np.dot(self.layers[i+1].delta,
-                                          self.layers[i+1].weights.T) * \
+        for i in range(self.num_layers - 2, 0, -1):
+            self.layers[i].delta = np.dot(self.layers[i + 1].delta,
+                                          self.layers[i + 1].weights.T) * \
                 self.layers[i].f_prime
 
     def update_weights(self, n_examples, eta, lmbd):
         for i in range(1, self.num_layers):
-            if i < self.num_layers-1:
+            if i < self.num_layers - 1:
                 self.layers[i].del_b = \
                     np.dot(np.ones((1, self.minibatch_size)),
                            self.layers[i].delta)
@@ -96,7 +97,7 @@ class Network:
                 self.layers[i].biases = self.layers[i].biases - \
                     (eta / self.minibatch_size) * self.layers[i].del_b
 
-            self.layers[i].del_w = np.dot(self.layers[i-1].z.T,
+            self.layers[i].del_w = np.dot(self.layers[i - 1].z.T,
                                           self.layers[i].delta)
 
             # Apply L2 regularization to weight updates with regularization
