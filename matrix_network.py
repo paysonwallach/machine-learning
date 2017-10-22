@@ -16,9 +16,9 @@ class Layer:
             self.s = np.zeros((minibatch_size, size[1]))
             self.delta = np.zeros((minibatch_size, size[1]))
             # Initilize weights with gaussian distribution proportional to the
-            # number of inputs of the input neuron
+            # number of inputs to each neuron
             self.weights = np.random.normal(size=size,
-                                            scale=1/np.sqrt(size[0]))
+                                            scale=1 / np.sqrt(size[0]))
             self.del_w = np.zeros_like(self.weights)
 
         if not input_layer and not output_layer:
@@ -53,20 +53,20 @@ class Network:
         self.minibatch_size = minibatch_size
         self.cost = cost
 
-        print("Initilizing network...")
+        print("initializing network...")
         for i in range(self.num_layers - 1):
             if i == 0:
-                print("\tInitilizing input layer of size {0}.".format(
+                print("\tinitializing input layer of size {0}.".format(
                     sizes[i]))
                 self.layers[i] = Layer([sizes[i]], minibatch_size,
                                        input_layer=True)
             else:
-                print("\tInitilizing hidden layer of size {0}.".format(
+                print("\tinitializing hidden layer of size {0}.".format(
                     sizes[i]))
                 self.layers[i] = Layer([sizes[i - 1],
                                         sizes[i]], minibatch_size)
 
-        print("\tInitilizing output layer of size {0}.".format(sizes[-1]))
+        print("\tinitializing output layer of size {0}.".format(sizes[-1]))
         self.layers[-1] = Layer([sizes[-2], sizes[-1]], minibatch_size,
                                 output_layer=True, activation=sigma.softmax)
 
